@@ -52,7 +52,6 @@ class DetailFragment :BaseFragment(),DetailFragmentContract.View{
         setHasOptionsMenu(true);
 
     }
-
     override fun displayView(article: Articles) {
         Picasso.get().load(article.urlToImage).into(photo)
         description.setText(article.description)
@@ -68,4 +67,13 @@ class DetailFragment :BaseFragment(),DetailFragmentContract.View{
         menu.clear()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            Log.i("DetailFragment","clicked")
+            activity?.onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+
+    }
 }
