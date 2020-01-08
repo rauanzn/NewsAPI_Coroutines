@@ -82,6 +82,7 @@ class NewsListFragmentPresenter(var view: NewsListContract.View?,
             }
         }
     override fun onReachedEnd() {
-        model.getNews(this)
+//        model.getNews(this)
+        model.getNewsByCoroutines(this)
     }
 }
