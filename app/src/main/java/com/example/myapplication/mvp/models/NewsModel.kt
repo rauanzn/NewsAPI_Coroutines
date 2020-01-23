@@ -9,6 +9,10 @@ import com.example.myapplication.mvp.interfaces.OnFinishedListener
 import com.example.myapplication.mvp.interfaces.OnFinishedListenerCoroutines
 
 class NewsModel : NewsListContract.Model{
+    override fun makeZeroPage() {
+        PAGE = 0
+    }
+
     lateinit var apiCient:ApiClient
     var PAGE:Int = 0
     init {
@@ -38,6 +42,6 @@ class NewsModel : NewsListContract.Model{
     override fun getNewsByKeywordByCoroutines(onFinished: OnFinishedListenerCoroutines, keyword: String?) {
         val api = apiCient.getApiClient()?.create(GSON::class.java)
         val call =  api?.getNewsSearchByCoroutines(keyword!!,"en","publishedAt",ApiClient.TOKEN)
-        onFinished.onFinished(call)
+        onFinished.onFinishedWithKeyword(call)
     }
 }

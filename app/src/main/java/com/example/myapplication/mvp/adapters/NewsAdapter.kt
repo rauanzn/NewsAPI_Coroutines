@@ -40,8 +40,13 @@ class NewsAdapter(var news: ArrayList<Articles>,con:Context,onItemClickListener:
         holder.itemView.publishedAt.setText(list.get(position).publishedAt)
         holder.itemView.desc.setText(list.get(position).description)
         holder.itemView.title.setText(list.get(position).title)
-        Picasso.get().load(list.get(position).urlToImage).into(holder.itemView.img)
-        holder.itemView.load_photo.visibility = View.INVISIBLE
+        try {
+            Picasso.get().load(list.get(position).urlToImage).into(holder.itemView.img)
+        }
+        catch (e:Throwable){
+            Log.e("NewsAdapter",e.message)
+        }
+            holder.itemView.load_photo.visibility = View.INVISIBLE
         holder.bind(list.get(position))
     }
 

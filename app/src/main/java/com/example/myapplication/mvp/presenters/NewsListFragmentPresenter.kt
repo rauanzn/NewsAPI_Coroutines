@@ -18,6 +18,20 @@ import retrofit2.Response
 class NewsListFragmentPresenter(var view: NewsListContract.View?,
                                 var model: NewsListContract.Model)
     : NewsListContract.Presenter,OnFinishedListener,OnReachedEndListener,OnFinishedListenerCoroutines{
+    override fun onFinishedWithKeyword(news: Deferred<Response<News>>?) {
+        myJob = CoroutineScope(Dispatchers.Main).launch {
+            val result = asyncFetchingData(news).await()
+            if (result != null) {
+                when (result.code()) {
+                    201, 200 -> {
+                        view?.setDataToRecyclerView(result.body()!!)
+                        view?.onReloadSuccess()
+                    }
+                }
+            }
+        }
+    }
+
     lateinit var compositeDisposable: CompositeDisposable
     private var myJob: Job? = null
 
@@ -28,6 +42,7 @@ class NewsListFragmentPresenter(var view: NewsListContract.View?,
         }
         else{
             model.getNewsByKeywordByCoroutines(this,keyword)
+            model.makeZeroPage()
 //Rx part            model.getNewsByKeyword(this,keyword)
         }
     }
@@ -46,17 +61,17 @@ class NewsListFragmentPresenter(var view: NewsListContract.View?,
     }
     @SuppressLint("CheckResult")
     override fun onFinished(news: Observable<News>?) {
-        Log.i("newslistfragment","yoy")
-        news?.subscribeOn(Schedulers.single())
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe({
-                Log.i("search",it.articles.toString())
-
-            view?.setDataToRecyclerView(it)
-            view?.onReloadSuccess()
-    },{
-                view?.onReloadError()
-            })
+//        Log.i("newslistfragment","yoy")
+//        news?.subscribeOn(Schedulers.single())
+//            ?.observeOn(AndroidSchedulers.mainThread())
+//            ?.subscribe({
+//                Log.i("search",it.articles.toString())
+//
+//            view?.setDataToRecyclerView(it)
+//            view?.onReloadSuccess()
+//    },{
+//                view?.onReloadError()
+//            })
     }
     override fun onFinished(news: Deferred<Response<News>>?) {
         myJob = CoroutineScope(Dispatchers.Main).launch {
@@ -64,8 +79,7 @@ class NewsListFragmentPresenter(var view: NewsListContract.View?,
             if (result != null) {
                 when (result.code()) {
                     201, 200 -> {
-                        Log.i("NewsListFragmentPresent", "assigned")
-                        view?.setDataToRecyclerView(result.body()!!)
+                        view?.addDataToRecyclerView(result.body()!!)
                         view?.onReloadSuccess()
                     }
                 }

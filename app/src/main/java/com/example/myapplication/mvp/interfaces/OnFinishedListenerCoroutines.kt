@@ -6,4 +6,5 @@ import retrofit2.Response
 
 interface OnFinishedListenerCoroutines {
     fun onFinished(news: Deferred<Response<News>>?)
+    fun onFinishedWithKeyword(news: Deferred<Response<News>>?)
 }

@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +35,7 @@ class NewsListFragment() : BaseFragment(), NewsListContract.View{
     private lateinit var recyclerView: RecyclerView
     private lateinit var navPresenter:FragmentNavigation.Presenter
     private lateinit var refresh_layout:SwipeRefreshLayout
+    private lateinit var toolbar:Toolbar
     private lateinit var nestedScrollView: NestedScrollView
     private var onItemClickListener = object :OnItemClickListener{
         override fun onItemClick(bundle:Bundle) {
@@ -44,13 +46,16 @@ class NewsListFragment() : BaseFragment(), NewsListContract.View{
         }
 
     }
-
-    override fun setDataToRecyclerView(news: News) {
+    override fun addDataToRecyclerView(news:News){
         adapter.list.addAll(news.articles as ArrayList<Articles>)
+    }
+    override fun setDataToRecyclerView(news: News) {
+        adapter.list = (news.articles as ArrayList<Articles>)
     }
 
     override fun setPresenter(presenter: NewsListContract.Presenter) {
         this.presenterNews = presenter
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,8 +71,9 @@ class NewsListFragment() : BaseFragment(), NewsListContract.View{
         val view = inflater.inflate(R.layout.fragment_news_list,container,false)
         setPresenter(NewsListFragmentPresenter(this,NewsModel()))
         navPresenter = super.navigationPresenter
+        toolbar = view.toolbar_main
         initRecycler(view)
-        (activity as AppCompatActivity).setSupportActionBar(view.toolbar_main)
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
         view.refresh_layout.setOnRefreshListener {
             presenterNews.loadNews(context,null)
             view.refresh_layout.isRefreshing = false
@@ -109,7 +115,7 @@ class NewsListFragment() : BaseFragment(), NewsListContract.View{
     }
 
     override fun onReloadError() {
-        Toast.makeText(context,"oops error came over",Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context,"oops error came over",Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
@@ -134,12 +140,12 @@ class NewsListFragment() : BaseFragment(), NewsListContract.View{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query!!.length>2){
                     presenterNews.loadNews(null,query)
+                    Log.i("NewsListFragment","searching")
                 }
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                presenterNews.loadNews(null,newText)
                 return false
             }
 

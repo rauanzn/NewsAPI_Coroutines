@@ -13,12 +13,14 @@ interface NewsListContract{
         fun getNewsByKeyword(onFinished: OnFinishedListener,keyword: String?)
         fun getNewsByCoroutines(onFinishedListener: OnFinishedListenerCoroutines)
         fun getNewsByKeywordByCoroutines(onFinished: OnFinishedListenerCoroutines,keyword: String?)
+        fun makeZeroPage()
     }
     interface Presenter: BaseFragmentPresenter {
         fun loadNews(context: Context?,keyword:String?)
     }
     interface View:
         BaseFragmentView<Presenter> {
+        fun addDataToRecyclerView(news:News)
         fun noInternetConnection()
         fun onReloadSuccess()
         fun onReloadError()
